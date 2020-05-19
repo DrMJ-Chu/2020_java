@@ -1,6 +1,6 @@
-package com.ict.edu3;
+package com.ict.edu6;
 
-public class Person {
+public abstract class Person {
 	// UML : -name : String, -age:int
 	private String name;
 	private int age ;
@@ -27,9 +27,7 @@ public class Person {
 		this.age = age;
 	}
 	
-	public void print() {
-		System.out.print("이름 : " + name + ", 나이 : " + age);
-	}
+	public abstract void print() ;
 	
 	
 }
