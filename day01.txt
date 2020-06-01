@@ -1,0 +1,319 @@
+DBMS : 데이터베이스관리시스템
+       데이터베이스를 관리하는 시스템
+
+- 데이터 : 실제 값
+- 정보 : 의미가 있는 데이터
+- 데이터베이스 : 필요한 정보를 얻기 위해 연관된 데이터를 모아 통합해 놓은 것
+- 데이터베이스 : 서로 관련된 데이터들을 일정한 체계와 순서로 모아 놓은 데이터의 집합
+- 데이터베이스 : 현재 운영되는 정보를 통합하여 저장되어있으며 공용으로 사용 되어야 함
+                 (중복은 최소화)
+
+- 데이터베이스의 특징: 
+  * 실시간 접근,  
+  * 계속적인 변화(삽입,삭제,수정), 
+  * 동시공유, 
+  * 내용에 따른 참조(검색) : 데이터값에 따라 정보를 찾을 수 있음
+
+
+
+- 스왑메모리 : 데이터처리를 위한 메모리 용량을 확보하기 위해 
+               하드디스크의 저장 장치를 메모리로 사용
+               메모리의 크기는 데이터 처리 성능에 영향을 미친다.
+
+- 관계형 데이터베이스 ( 오라클, MySQL, MariaDB, MsSQL )
+  : 테이블(표) 형태로 만들어진 데이터베이스
+  : 행과 열로 이루어짐
+
+  행 : 튜플, row , 레코드, 
+  열 : 컬럼, 속성(애트리뷰트)
+  도메인 : 열의 데이터의 타입과 크기, 제약조건등을 지정하는 정보 
+
+  스키마 : 데이버베이스, 테이블의 구조
+           외부스키마, 개념스키마, 내부스키마 
+     외부스키마 : 사용자가 보는 데이터, 서브키마,               => 논리스키마 
+     개념스키마 : 전체 데이터, 외부스키마를 하나로 통합한 것    => 논리스키마      
+     내부스키마 : 물리적 저장장치에 실제로 저장되는 방법을 표현 => 물리스키마 
+
+- 기본키(PK,Primary key) : 튜플을 식별할 수 있는 고유한 값을 가져야 한다.(유일키(UNIQUE) 
+                            NUll값이 아니어야 한다. (NOT NUll) 
+ - 외래키(FK, foreing key) : 어느 테이블에서는 기본키이지만 다른테이블에서는 하나의 컬럼으로만 
+                             존재하는 컬럼 
+
+==========================================================================================
+ 오라클 설치 후 연습용 hr 계정 환경설정
+ - 오라클 설치 폴더는 일반적인 설치 폴더를 사용 ( 한글이 있으면 실행안됨)
+ - 오라클 설치 중간에 비번 입력 : 슈퍼관리자 비번을 물어본다. (oracle)
+ - 오라클 포트 번호 : 8080 ( tomcat과 충돌이 일어난다.)
+ - 오라클 리스너 포트 번호 : 1521
+ - 슈퍼관리자의 아이디 : system,  비번 : 설치할 때 입력한 비밀번호 
+
+ 오라클 설치 완료 후 진행 사항
+ 1) (윈도우 + r) cmd  => cmd 창:  sqlplus
+
+   Microsoft Windows [Version 10.0.17763.1217]
+   (c) 2018 Microsoft Corporation. All rights reserved.
+
+   C:\Users\user>sqlplus
+
+   SQL*Plus: Release 18.0.0.0.0 - Production on 월 6월 1 11:46:40 2020
+   Version 18.4.0.0.0
+
+   Copyright (c) 1982, 2018, Oracle.  All rights reserved.
+
+   사용자명 입력: system
+   비밀번호 입력: (설치시 작성한 비빌번호)
+   마지막 성공한 로그인 시간: 월 6월  01 2020 11:21:21 +09:00
+
+   다음에 접속됨:
+   Oracle Database 18c Express Edition Release 18.0.0.0.0 - Production
+   Version 18.4.0.0.0
+
+   SQL> exit
+ 2) SQL Develeper 실행
+  - 자바 JDK 위치 설정(C:\Program Files\Java\jdk1.8.0_251)하면 자동실행된다.(맨처음 한번만)
+  - 오라클 데이터베이스에 접속 하기 
+    -> Oracle 접속 마우스 오른쪽 눌러 새접속 클릭
+    -> 설정 후 테스트에서 성공이 나오면 접속 버튼 클릭
+=================================================================
+-- 일반 계정 만들기 
+-- CREATE USER c##내계정 IDENTIFIED BY 비번 ;
+-- 오라클 12c부터는 공통계정앞에 c##을 붙이도록 네이밍 규칙변경
+> CREATE USER c##nohsam IDENTIFIED BY 1111 ; 
+
+-- 내 계정에 접속 권한과 자원 사용 권한을 부여 하자
+-- GRANT : 권한 부여 명령어,  
+> GRANT CONNECT, RESOURCE TO c##nohsam ;
+
+==========   내 계정에 접속 =======================
+-- 현재 구성된 테이블 보기 : select * from tab;
+-- 테이블 구조 (스키마보기) : desc 테이블이름 ;
+> SELECT * FROM TAB;
+> DESC 테이블이름;
+====================================================
+ 
+SQL : Structured Query Language ( 구조화 질의어)는 관계형 데이터베이스 관리 시스템(RDBMS)의 
+      데이터를 관리하기 위해 설계된 특수 목적의 프로그래밍 언어이다. 
+
+ - SQL 기능에 따른 분류
+  1) DDL(데이터정의어) : 데이터 베이스 객체를 정의하는 언어, 
+      => CREATE(생성), ALTER(변경), DROP(삭제)  
+
+  2) DML(데이터조작어) : 테이블에 존재하는 데이터를 검색, 삽입 ,수정, 삭제에 사용되는 언어
+     SELECT (검색),  INSERT(삽입), UPDATE(수정), DELETE(삭제)
+ 
+  3) DCL(데이터제어어) : 데이터의 사용 권한을 관리하는데 사용하는 언어
+     슈퍼계정: GRANT(권한부여),  REVOKE(권한회수)
+
+========================================================================================
+오라클 자료형(datatype) 
+ 
+  1) 숫자 : 정수 => number(), number(4) (전체 4자리 수)
+            실수 =>  number(),number(4,1) (전체 4자리수, 소수점 자리수)
+
+  2) 문자 : 고정길이 => char(크기)
+            가변길이 => varchar2(크기) => 4KB
+            varchar2 보다 많은 양은 clob(크기) => 4GB
+    ** 영문자 대소문자,숫자 => 1byte,  영어 숫자 제외한 글자 => 3byte     
+
+  3) 날짜 : date('2020/06/01')  
+
+  ** 문자, 날짜는 반드시 홑따옴표를 사용해야 된다.
+
+=================================================================================================
+ ** 테이블 생성 (CREATE) 문법
+  : 기본적으로 테이블에는 PRIMARY KEY가 존재해야 된다.
+ 
+  방법1) : PRIMARY KEY가 하나일때만 가능
+  CREATE TABLE 테이블이름 (
+      컬럼이름 datatype NOT NULL PRIMARY KEY,
+      컬럼이름 datatype,
+      컬럼이름 datatype,
+      컬럼이름 datatype
+  );
+
+  방법2) : PRIMARY KEY가 하나 또는 여러개 일때 모두 가능
+  CREATE TABLE 테이블이름 (
+      컬럼이름1 datatype NOT NULL,
+      컬럼이름2 datatype NOT NULL,
+      컬럼이름 datatype,
+      컬럼이름 datatype,
+      PRIMARY KEY (컬럼이름1)
+      PRIMARY KEY (컬럼이름1, 컬럼이름2)
+  );
+
+실행)
+방법1)
+CREATE TABLE member01(
+  idx NUMBER NOT NULL PRIMARY KEY,
+  m_id VARCHAR2(50),
+  m_pw VARCHAR2(50),
+  m_name VARCHAR2(50),
+  m_age  NUMBER(3),
+  m_reg date 
+);
+
+방법2)
+CREATE TABLE member02(
+  idx NUMBER NOT NULL,
+  m_id VARCHAR2(50),
+  m_pw VARCHAR2(50),
+  m_name VARCHAR2(50),
+  m_age  NUMBER(3),
+  m_reg date,
+  PRIMARY KEY(idx)
+);
+
+오류발생
+CREATE TABLE member03(
+  idx NUMBER NOT NULL PRIMARY KEY,
+  m_id VARCHAR2(50) NOT NULL PRIMARY KEY,
+  m_pw VARCHAR2(50),
+  m_name VARCHAR2(50),
+  m_age  NUMBER(3),
+  m_reg date
+  );
+
+CREATE TABLE member03(
+  idx NUMBER NOT NULL ,
+  m_id VARCHAR2(50) NOT NULL ,
+  m_pw VARCHAR2(50),
+  m_name VARCHAR2(50),
+  m_age  NUMBER(3),
+  m_reg date,
+  PRIMARY KEY (idx, m_id)
+  );
+
+** 테이블 삭제 (DROP) 문법 :   DROP TABLE 테이블이름;
+DROP TABLE MEMBER02;
+
+** 테이블 복사 :
+
+구조와 내용(데이터)을 모두 복사 
+ CAEATE TABLE 복사본 테이블 AS SELECT * FROM 복사할 테이블 ;
+
+구조만 복사
+ CAEATE TABLE 복사본 테이블 AS SELECT * FROM 복사할 테이블 WHERE 1 = 0;
+
+
+ 예제1)
+ book 테이블 만들기 
+ 도서번호(bookid,pk),  도서이름(bookname, 99), 출판사(publisher,50), 가격(price,7)
+  CREATE TABLE book(
+   bookid NUMBER NOT NULL PRIMARY KEY,
+   bookname VARCHAR2(99) ,
+   publisher VARCHAR2(50),
+   price NUMBER(7)
+ );
+  
+ 예제2) book 테이블을 구조와 내용 모두 복사 해서 bookcopy 테이블 만들기 
+ CREATE TABLE bookcopy AS SELECT * FROM book ; 
+ 
+
+- 데이터베이스 객체 변경 : ALTER
+ --  컬럼 추가(add) : ALTER TABLE 테이블이릅 ADD 컬럼명 자료형(크기);
+     ALTER TABLE MEMBER01 ADD m_addr VARCHAR2(50);
+     
+ --  컬럼 삭제(drop) : ALTER TABLE 테이블이름 DROP COLUMN 컬럼명 ;
+    ALTER TABLE member01 DROP COLUMN m_addr ;
+
+ --  컬럼 변경(modify):    ALTER TABLE 테이블이름 MODIFY 컬럼명 자료형(크기);
+     --- 데이터가 있는 경우 
+     --- 해당 컬럼에 데이터가 있으면 컬럼의 자료형은 변경할 수 없다.
+     --- 현재 가지고 있는 데이터의 크기보다 크게 변경할 수 있다.
+     --- 현재 가지고 있는 데이터의 크기보다 작게는 변경할 수 없다.
+     
+     --- 데이터가 없는 경우 : 컬럼의 자료형과 크기를 마음대로 변경할 수 있다.
+         ALTER TABLE member01 MODIFY m_age VARCHAR2(50);
+         ALTER TABLE member01 MODIFY m_age NUMBER(3);
+
+
+  -- 테이블이름 변경하기 :  ALTER TABLE 기본이름 rename to 새이름 ;
+       ALTER TABLE member01 rename to members ;
+
+================================================================================
+슈퍼계정에서 tablespace 확보하기 
+alter user [계정명] default tablespace users quota unlimited on users;
+
+=================================================================================
+DML : 데이터 조작어 
+- 삽입 (insert into)
+- 갱신 (update set)
+- 삭제 (delete from)
+- 검색 (select from)
+
+삽입 : 데이터를 해당 테이블에 저장하는 것
+
+  방법1)  insert into 테이블이름 values(데이터(값),....) ;
+     - 값은 순서대로 모두 채워야 한다.
+     - 문자와 날짜는 반드시 '' 사용
+     - 중간에 비어있으면 오류발생
+     - 값을 넣기 싫으면  null 이라도 넣어야 하다.
+     - 속성이 not null 인 컬럼은 반드시 데이터를 넣어야 한다.
+
+insert into members values(1, 'hong', 'h111', '홍길동', 27, '2020/06/01' );
+insert into members values(2, 'hong', 'h111', '홍길동', 27, '2020/06/01' );
+insert into members values(3, 'hong', 'h111', '홍길동', null, null );
+-- insert into members values(4, 'hong', 'h111', '홍길동'  ); 모든 정보를 입력안해서 오류
+insert into members values(4, null, null, '홍길동', null, null ); 
+-- 속성이 NOT NULL 인데  NULL을 넣으면 오류 발생
+-- insert into members values(null, 'hong', 'h111', '홍길동', 27, '2020/06/01' ); 
+
+
+방법2)  insert into 테이블이름(컬럼명,...) values(데이터(값),....) ;
+  - 넣고 싶은 데이터의 컬러명과 데이터만 입력
+  insert into members(idx, m_id, m_pw) values(5, 'kang', 'k111');
+ 
+예시1) book 테이블에 데이터 입력하기 
+insert into book values(1,'축구의 역사', '굿스포츠',7000);
+insert into book values(2,'축구아는 여자', '나무수',13000);
+insert into book values(3,'축구의 이해', '대한미디어',22000);
+insert into book values(4,'골프 바이블', '대한미디어',35000);
+insert into book values(5,'피겨 교본', '굿스포츠',8000);
+
+COMMIT;
+
+테이블의 모든 내용 검색 : select * from 테이블이름
+
+-- BOOK 테이블의 구조와 내용 복사하기 (CPBOOK 테이블)
+CREATE TABLE CPBOOK AS SELECT * FROM BOOK;
+
+-- BOOK 테이블 구조만 복사하기 (BOOKCP 테이블)
+CREATE TABLE BOOKCP AS SELECT * FROM BOOK WHERE 1 = 0 ;
+
+insert into book values(6,'역도 단계별기술', '굿스포츠',6000);
+insert into book values(7,'야구의 추억', '이상미디어',20000);
+insert into book values(8,'야구를 부탁해', '이상미디어',13000);
+insert into book values(9,'올림픽 이양기', '삼성당',700);
+insert into book values(10,'Olympic Champions', 'Pearson',13000);
+commit;
+
+CREATE TABLE CUSTOMER(
+ custid number not null PRIMARY key ,
+ name VARCHAR2(50),
+ addree VARCHAR2(50),
+ phone VARCHAR2(50)
+);
+
+insert into CUSTOMER values(1,'박지성', '영국 맨체스타','0100-5000-0001');
+insert into CUSTOMER values(2,'김연아', '대한민국 서울','0100-6000-0001');
+insert into CUSTOMER values(3,'장미란', '대한민국 강원도','0100-7000-0001');
+insert into CUSTOMER values(4,'추신수', '미국 클리블랜드','0100-8000-0001');
+insert into CUSTOMER values(5,'박세리', '대한미국 대전', null);
+commit;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
