@@ -699,6 +699,190 @@ order by c.name;
  from customer c 
  where EXISTS( select * from orders o where c.custid = o.custid );
 
+=======================================================================================
+내장함수
+dual : 출력결과를 보기 위해 오라클에서 제공하는 가상 테이블
+1. 숫자관련 내장 함수들
+ 1) 절대값 : ABS(숫자)
+  SELECT abs(-75), abs(75), abs(+75), abs(-3.14), abs(3.14) FROM dual;
+
+ 2) 올림 : ceil(숫자) , 자릿수 지정이 없음, 소숫점 기준
+SELECT ceil(-75.41), ceil(75.41), ceil(+75.61), ceil(-3.41), ceil(3.51) FROM dual;
+
+ 3) 버림 : floor(숫자),  자릿수 지정이 없음, 소숫점 기준
+SELECT floor(-75.41), floor(75.41), floor(+75.61), floor(-3.41), floor(3.51) 
+FROM dual; 
+
+ 4) 버림 : trunc(숫자), trunc(숫자,자릿수) 
+SELECT trunc(-75.41), trunc(75.41), trunc(+75.61), trunc(-3.41), trunc(3.51) 
+FROM dual; 
+SELECT trunc(-75.41,0), trunc(75.41,0), trunc(+75.61,0), trunc(-3.41,0),
+trunc(3.51,0) FROM dual; 
+SELECT trunc(-75.41,1), trunc(75.41,1), trunc(+75.61,1), trunc(-3.41,1),
+trunc(3.51,1) FROM dual; 
+SELECT trunc(-75.41,-1), trunc(75.41,-1), trunc(+75.61,-11), trunc(-3.41,-1),
+trunc(3.51,-1) FROM dual; 
+
+5) 반올림 : round(숫자), round(숫자, 자릿수)
+select round(13.4441),round(-13.4441), round(13.5541), round(-13.5541)
+from dual;
+select round(13.4441,0),round(-13.4441,0), round(13.5541,0), round(-13.5541,0)
+from dual;
+select round(13.4441,1),round(-13.4441,1), round(13.5541,1), round(-13.5541,1)
+from dual;
+select round(14.4441,-1),round(-14.4441,-1), round(15.5541,-1), round(-15.5541,-1)
+from dual;
+
+6) power(숫자, 숫자) : N의 제곱근
+select power(2,3), power(3,2) from dual;
+ 
+7) sqrt(숫자) : 제곱근
+select sqrt(4), sqrt(9), sqrt(10),trunc(sqrt(10),1) from dual;
+
+8) sign(정수): 음수 -1,  양수 1
+select sign(24), sign(-24), sign(24.14), sign(-24.24) from dual ;
+
+9) mod : 나눈 나머지 
+select mod(27,2), mod(27,3), mod(27,4) from dual;
+======================================================================================
+
+문자함수
+1.chr(아스키코드숫자) : 아스키코드숫자를 받아서 문자로 표시 
+ select chr(65), chr(97), chr(48) from dual;
+2.concat(문자열, 문자열) : 두 문자열을 결합
+ select concat('ICT','인재개발원') from dual;
+3.initcap(문자열) :첫글자를 대문자 나머지를 소문자로 만듬
+ select initcap('boys'), initcap('BOYS'), initcap('대한민국')from dual;
+4.lower(문자열) : 모든글자 소문자로 만듬
+5.upper(문자열) : 모든글자 대문자로 만듬
+ select lower('KOREA'), lower('KoRea'),upper('korea'), upper('KoRea') from dual;
+6.trim(문자열) : 양쪽공백제거
+7.ltrim(문자열) : 왼쪽 공백 제거 
+8.rtrim(문자열) : 오른쪽 공백 제거 
+9.length(문자열) : 문자열의 길이
+ select trim('  oracle xe 18  '),ltrim('   oracle xe 18  '),rtrim('  oracle xe 18  ')
+ from dual;
+  select 
+   length(trim('  oracle xe 18  ')),
+   length(ltrim('   oracle xe 18  ')),
+   length(rtrim('  oracle xe 18  '))
+ from dual;
+
+10.lpad(문자열, 자릿수, 왼쪽공백을 메울 문자) : 자릿수가 모자르면 잘린다.
+11.rpad(문자열, 자릿수, 오른쪽공백을 메울 문자) : 자릿수가 모자르면 잘린다.
+select lpad('oracle xe', 20, '@'), rpad('oracle xe', 20, '^')
+from dual;
+select lpad('oracle xe', 5, '@'), rpad('oracle xe', 5, '^')
+from dual;
+12.substr(문자열,시작위치,갯수): 시작위치는 1부터 , -는 오른쪽 출발
+select substr('abcdefgh', 2,2),
+      substr('abcdefgh', -2,2),
+      substr('abcdefgh', -3,5),
+      substr('abcdefgh', -5,3) from dual;
+13. replace(문자열, 변경할문자, 변경문자)
+select replace('JACK and JUE', 'J', 'BL') from dual;
+
+14. ASCII('아스키문자') : 숫자로 나타냄 ( chr()의 반대)
+select ASCII('A'), ASCII('a'), ASCII('0') from dual;
+15. instr(문자열, 찾는문자열,시작위치): 문자열에서 찾는 문자열의 위치 표치, index 1 부터
+select instr('77070-1077999','-')from dual ; -- 6
+select instr('77070-1077999','0')from dual ; -- 3(첫번째 0찾기)
+select instr('77070-1077999','0',1,1)from dual ; -- 3(첫번째 0찾기)
+select instr('77070-1077999','0',1,2)from dual ; -- 3(두번째 0찾기)
+select instr('77070-1077999','0',1,3)from dual ; -- 3(세번째 0찾기)
+select instr('77070-1077999','0',-1,1)from dual ; -- 3(첫번째 0찾기)
+select instr('77070-1077999','0',-1,2)from dual ; -- 3(두번째 0찾기)
+select instr('77070-1077999','0',-1,3)from dual ; -- 3(세번째 0찾기)
+
+===========================================================================
+
+날짜/시간 함수
+1. sysdate: 시스템상의 오늘 날짜 반환하는 인자없는 함수, 연산가능
+2. to_date(문자열) ; 문자형 데이터를 날짜형 데이터로 변경 
+select sysdate from dual;
+select sysdate + 26 from dual;
+select sysdate - '96/06/26' from dual; -- 오류
+select trunc(sysdate - to_date('20/06/01')) from dual;
+select trunc(to_date('20/06/01') - sysdate ) from dual;
+
+3. to_char('날짜', '날짜형') : 날짜형 데이터를 문장형 데이터로 변경
+select to_char(to_date('2020/06/05','yyyy-mm-dd'),'yyyymmdd') from dual;
+
+4. ADD_MONTHS(date, 숫자) : 날짜형의 날짜에서 지정한 달만큼 더함 (1:다음달, -1:지난달)
+select sysdate, add_months(sysdate,4),add_months(sysdate,-4) from dual;
+5.last_day(date) : 해당 달의 마지막 날짜 
+select last_day(sysdate), 
+        last_day(add_months(sysdate,4)),
+        last_day(add_months(sysdate,-4)) from dual;
+        
+6. 해당 요일의 가장 가까운 날짜(미래) : next_day(날짜,요일)
+select sysdate, next_day(sysdate,'수요일'), next_day(sysdate,'목요일')from dual;
+
+7. 기간구하기 : moths_between(끝날짜, 시작날짜) : 월 단위
+select months_between(sysdate, '2020/01/01') from dual;
+select trunc(months_between(sysdate, to_date('2020/01/01'))) from dual;
+
+=============================================================================
+
+NULL 값이란? 아직 지정되지 않은 값
+NULL 값은 ‘0’, ‘’ (빈 문자), ‘ ’ (공백) 등과 다른 특별한 값
+NULL 값은 비교 연산자로 비교가 불가능함.
+NULL 값의 연산을 수행하면 결과 역시 NULL 값으로 반환됨.
+
+1) is null => 조건식에서 null 찾을 찾을 때 사용 
+2) is not null => 조건식에서 null이 아닌 것을 찾을 때 사용 
+3) NVL : null를 다른 데이터값으로 변경 한다.
+   NVL (컬러명, null 대신 들어갈 값)
+select * from customer;
+-- customer 테이블에서 null phone 컬럼에서 null 값 가진 고객의 이름
+select name from customer where phone = null; -- null를 못찾음
+select name from customer where phone is null; -- 정답
+select name from customer where phone is not null;
+select name, phone , NVL(phone,'0100-9000-0001') from customer ;
+
+=============================================================================
+rownum : 오라클 내부에서 생성되는 가상 컬럼, sql 조회 결과의 순번을 나타냄
+
+시퀀스 : 오라클에서 자동으로 고유 숫자값을 생성해 주며, 주로 기본키에 생성할때 사용
+** MySQL, MariaDB에서는 auto_increment 
+생성방법
+create sequence 이름(테이블_seq)
+    increment by 증가숫자
+    start with 시작숫자
+    nocycle (다시 시작하지 않는다.);
+
+create sequence members_seq
+increment by 1
+start with 1
+nocycle;
+
+사용법 : members_seq.nextval => 자동으로 숫자 부여
+select * from members;
+
+insert into members 
+values(members_seq.nextval,'hong','1111','홍길동', 24, sysdate);
+
+insert into members 
+values(members_seq.nextval,'park','1111','박찬호', 37, sysdate);
+======================================================================
+뷰 (View) : 가상 테이블, 실제 메모리에 존재하지 않는다.
+            (물리적으로 저장되는 데이블이 아니다.)
+            일반적인 사용자는 뷰를 만들 수 없다.
+            뷰는 수정, 삭제, 삽입 이 목적이 아니라 
+            검색(select)가 목적이다.
+            여러 테이블를 하나로 합쳐서 하나의 뷰로 만들 수 도 있고
+            하나의 테이블를 이용해서 여러개의 뷰를 만들 수도 있다.
+            같은이름의 뷰가 존재하면 오류발생
+             
+
+
+
+
+
+
+
+
+
 
 
 
